@@ -10,11 +10,9 @@ def loadData(name):            #loading hyperspectral datasets
         data = sio.loadmat(os.path.join(data_path, 'PaviaU.mat'))['paviaU']
         labels = sio.loadmat(os.path.join(data_path, 'PaviaU_gt.mat'))['paviaU_gt']
     return data, labels
-
 def splitTrainTestSet(X, y, testRatio, randomState=345):             #splitting the data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=testRatio, random_state=randomState,stratify=y)                                                    
-    return X_train, X_test, y_train, y_test
-    
+    return X_train, X_test, y_train, y_test    
 def applyPCA(X, numComponents=75):               #applying PCA method
     newX = np.reshape(X, (-1, X.shape[2]))
     pca = PCA(n_components=numComponents, whiten=True)
