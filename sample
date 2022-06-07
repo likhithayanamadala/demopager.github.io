@@ -1,5 +1,4 @@
-#loading hyperspectral datasets
-def loadData(name):         
+def loadData(name):            #loading hyperspectral datasets  
     data_path = os.path.join(os.getcwd(),'data')
     if name == 'IP':
         data = sio.loadmat(os.path.join(data_path, 'Indian_pines_corrected.mat'))['indian_pines_corrected']
@@ -11,14 +10,12 @@ def loadData(name):
         data = sio.loadmat(os.path.join(data_path, 'PaviaU.mat'))['paviaU']
         labels = sio.loadmat(os.path.join(data_path, 'PaviaU_gt.mat'))['paviaU_gt']
     return data, labels
-    
-#splitting the data
-def splitTrainTestSet(X, y, testRatio, randomState=345):  
+
+def splitTrainTestSet(X, y, testRatio, randomState=345):             #splitting the data
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=testRatio, random_state=randomState,stratify=y)                                                    
     return X_train, X_test, y_train, y_test
     
-#applying PCA method
-def applyPCA(X, numComponents=75):   
+def applyPCA(X, numComponents=75):               #applying PCA method
     newX = np.reshape(X, (-1, X.shape[2]))
     pca = PCA(n_components=numComponents, whiten=True)
     newX = pca.fit_transform(newX)
@@ -27,7 +24,6 @@ def applyPCA(X, numComponents=75):
     
 #CNN method
 input_layer = Input((S, S, L, 1))   
-
 ## convolutional layers
 conv_layer1 = Conv3D(filters=8, kernel_size=(3, 3, 7), activation='relu')(input_layer)
 conv_layer2 = Conv3D(filters=16, kernel_size=(3, 3, 5), activation='relu')(conv_layer1)
@@ -36,20 +32,16 @@ print(conv_layer3.shape)
 conv3d_shape = conv_layer3.shape
 conv_layer3 = Reshape((conv3d_shape[1], conv3d_shape[2], conv3d_shape[3]*conv3d_shape[4]))(conv_layer3)
 conv_layer4 = Conv2D(filters=64, kernel_size=(3,3), activation='relu')(conv_layer3)
-
 flatten_layer = Flatten()(conv_layer4)
-
 dense_layer1 = Dense(units=256, activation='relu')(flatten_layer)
 dense_layer1 = Dropout(0.4)(dense_layer1)
 dense_layer2 = Dense(units=128, activation='relu')(dense_layer1)
 dense_layer2 = Dropout(0.4)(dense_layer2)
 output_layer = Dense(units=output_units, activation='softmax')(dense_layer2)
 
-# define the model with input layer and output layer
-model = Model(inputs=input_layer, outputs=output_layer)
+model = Model(inputs=input_layer, outputs=output_layer)      # define the model with input layer and output layer
 model.summary()
 Y_pred_test = model.predict(Xtest)   #predicting the model
 y_pred_test = np.argmax(Y_pred_test, axis=1)
-
 classification = classification_report(np.argmax(ytest, axis=1), y_pred_test)
-print(classification) #observe the accuracy values
+print(classification)     #observe the accuracy values
